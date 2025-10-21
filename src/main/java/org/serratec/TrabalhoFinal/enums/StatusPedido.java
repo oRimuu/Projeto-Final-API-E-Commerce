@@ -1,5 +1,9 @@
 package org.serratec.TrabalhoFinal.enums;
 
-public class StatusPedido {
-
+public enum StatusPedido {
+    PENDENTE,           
+    EM_PROCESSAMENTO,  
+    ENVIADO,           
+    ENTREGUE,      
+    CANCELADO;        
 }
