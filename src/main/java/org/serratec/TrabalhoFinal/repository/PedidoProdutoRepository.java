@@ -1,5 +1,5 @@
 package org.serratec.TrabalhoFinal.repository;
 
-public interface EcomRepository {
+public class PedidoProdutoRepository {
 
 }

@@ -1,5 +1,5 @@
 package org.serratec.TrabalhoFinal.enums;
 
-public enum Enum {
+public class StatusPedido {
 
 }

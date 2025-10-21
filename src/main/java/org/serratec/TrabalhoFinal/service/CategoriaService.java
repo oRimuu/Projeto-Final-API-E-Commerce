@@ -1,5 +1,5 @@
 package org.serratec.TrabalhoFinal.service;
 
-public class EcomService {
+public class CategoriaService {
 
 }

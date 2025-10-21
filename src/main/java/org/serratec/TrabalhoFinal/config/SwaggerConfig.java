@@ -1,5 +1,5 @@
 package org.serratec.TrabalhoFinal.config;
 
-public class Configuracao {
+public class SwaggerConfig {
 
 }

@@ -1,5 +1,5 @@
 package org.serratec.TrabalhoFinal.dto;
 
-public class Dtos {
+public class ProdutoDTO {
 
 }

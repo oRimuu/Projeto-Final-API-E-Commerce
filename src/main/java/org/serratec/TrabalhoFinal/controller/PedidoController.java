@@ -1,5 +1,5 @@
 package org.serratec.TrabalhoFinal.controller;
 
-public class Controller {
+public class PedidoController {
 
 }
