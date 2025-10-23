@@ -1,16 +1,18 @@
 package org.serratec.TrabalhoFinal.controller;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.serratec.TrabalhoFinal.domain.Pedido;
-import org.serratec.TrabalhoFinal.dto.PedidoDTO;
 import org.serratec.TrabalhoFinal.service.PedidoService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/pedidos")
@@ -23,55 +25,28 @@ public class PedidoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<PedidoDTO>> listarTodos() {
-        List<PedidoDTO> pedidos = pedidoService.listarPedidos()
-                .stream()
-                .map(p -> {
-                    PedidoDTO dto = new PedidoDTO(p);
-                    dto.setCliente(p.getCliente()); // inclui o cliente completo
-                    dto.setItens(p.getItens());     // inclui os itens do pedido
-                    return dto;
-                })
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(pedidos);
+    public ResponseEntity<List<Pedido>> listarTodos() {
+        return ResponseEntity.ok(pedidoService.listarTodos());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PedidoDTO> buscarPorId(@PathVariable Long id) {
-        Pedido pedido = pedidoService.buscarPorId(id);
-        PedidoDTO dto = new PedidoDTO(pedido);
-        dto.setCliente(pedido.getCliente());
-        dto.setItens(pedido.getItens());
-        return ResponseEntity.ok(dto);
+    public ResponseEntity<Pedido> buscarPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(pedidoService.buscarPorId(id));
     }
 
     @PostMapping
-    public ResponseEntity<PedidoDTO> criarPedido(@Valid @RequestBody Pedido pedido) {
-        pedido.calcularValorTotal(); // calcula o total antes de salvar
-        Pedido novoPedido = pedidoService.criarPedido(pedido);
-
-        PedidoDTO dto = new PedidoDTO(novoPedido);
-        dto.setCliente(novoPedido.getCliente());
-        dto.setItens(novoPedido.getItens());
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(dto);
+    public ResponseEntity<Pedido> criarPedido(@RequestBody Pedido pedido) {
+        return ResponseEntity.ok(pedidoService.salvar(pedido));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PedidoDTO> atualizarStatus(@PathVariable Long id, @Valid @RequestBody Pedido pedidoAtualizado) {
-        Pedido pedido = pedidoService.atualizarPedido(id, pedidoAtualizado);
-
-        PedidoDTO dto = new PedidoDTO(pedido);
-        dto.setCliente(pedido.getCliente());
-        dto.setItens(pedido.getItens());
-
-        return ResponseEntity.ok(dto);
+    public ResponseEntity<Pedido> atualizarPedido(@PathVariable Long id, @RequestBody Pedido pedidoAtualizado) {
+        return ResponseEntity.ok(pedidoService.atualizar(id, pedidoAtualizado));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable Long id) {
-        pedidoService.deletarPedido(id);
-        return ResponseEntity.noContent().build(); // 204 - sem corpo
+    public ResponseEntity<Void> deletarPedido(@PathVariable Long id) {
+        pedidoService.deletar(id);
+        return ResponseEntity.noContent().build();
     }
 }

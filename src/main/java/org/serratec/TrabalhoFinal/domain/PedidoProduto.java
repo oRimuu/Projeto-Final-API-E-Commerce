@@ -1,6 +1,12 @@
 package org.serratec.TrabalhoFinal.domain;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MapsId;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,8 +15,7 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-
-// OLHAR AS AULAS UTILIZANDO A PK - PARA RELACIONAR O PEDIDO PRODUTO 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "pedido_produto")
@@ -19,17 +24,19 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 @AllArgsConstructor
 public class PedidoProduto {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @EmbeddedId
+    private PedidoProdutoPK id = new PedidoProdutoPK();
 
     @ManyToOne
-    @JoinColumn(name = "id_pedido", nullable = false)
+    @MapsId("pedidoId")
+    @JoinColumn(name = "id_pedido")
+    @JsonIgnore
     private Pedido pedido;
 
     @ManyToOne
+    @MapsId("produtoId")
     @JsonBackReference
-    @JoinColumn(name = "id_produto", nullable = false)
+    @JoinColumn(name = "id_produto")
     private Produto produto;
 
     @NotNull(message = "Preencha a quantidade.")
@@ -40,7 +47,6 @@ public class PedidoProduto {
     @Column(nullable = false)
     private BigDecimal precoUnitario;
 
-    //Método para calcular valor total
     public BigDecimal getSubtotal() {
         return precoUnitario.multiply(BigDecimal.valueOf(quantidade));
     }

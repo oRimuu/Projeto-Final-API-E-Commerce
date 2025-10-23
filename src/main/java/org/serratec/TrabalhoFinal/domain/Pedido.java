@@ -32,7 +32,7 @@ public class Pedido {
     @NotNull(message = "Preencha o valor total.")
     @Column(nullable = false)
     private BigDecimal valorTotal;
-
+    
     @ManyToOne
     @JoinColumn(name = "cliente_id", nullable = false)
     private Cliente cliente;

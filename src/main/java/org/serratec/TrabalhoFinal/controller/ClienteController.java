@@ -3,6 +3,7 @@ package org.serratec.TrabalhoFinal.controller;
 import java.util.List;
 
 import org.serratec.TrabalhoFinal.domain.Cliente;
+import org.serratec.TrabalhoFinal.dto.ClienteDTO;
 import org.serratec.TrabalhoFinal.service.ClienteService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -26,12 +27,12 @@ public class ClienteController {
     }
 
     @GetMapping
-    public List<Cliente> listarTodos() {
+    public List<ClienteDTO> listarTodos() {
         return clienteService.listarTodos();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Cliente> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<ClienteDTO> buscarPorId(@PathVariable Long id) {
         return clienteService.buscarPorId(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
