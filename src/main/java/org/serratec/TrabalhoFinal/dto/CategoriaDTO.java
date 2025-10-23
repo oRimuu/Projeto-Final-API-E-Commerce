@@ -1,5 +1,19 @@
 package org.serratec.TrabalhoFinal.dto;
 
-public class CategoriaDTO {
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class CategoriaDTO {
+	
+
+	private Long id;
+	
+	private String nome;
+	
+	private String descricao;
 }

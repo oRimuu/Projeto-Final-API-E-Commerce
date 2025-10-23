@@ -37,7 +37,7 @@ public class Pedido {
     @JoinColumn(name = "cliente_id", nullable = false)
     private Cliente cliente;
 
-    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "pedido")//, cascade = CascadeType.ALL
     private List<PedidoProduto> itens;
 
     @NotNull
@@ -46,13 +46,13 @@ public class Pedido {
     private StatusPedido status = StatusPedido.PENDENTE;
 
     // Calcula o total automaticamente com base nos itens
-    public void calcularValorTotal() {
+    public BigDecimal calcularValorTotal() {
         if (itens != null && !itens.isEmpty()) {
-            this.valorTotal = itens.stream()
+        	 return itens.stream()
                 .map(PedidoProduto::getSubtotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         } else {
-            this.valorTotal = BigDecimal.ZERO;
+            return BigDecimal.ZERO;
         }
     }
 }

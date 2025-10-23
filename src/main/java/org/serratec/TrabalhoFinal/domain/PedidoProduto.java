@@ -10,6 +10,8 @@ import java.math.BigDecimal;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
+// OLHAR AS AULAS UTILIZANDO A PK - PARA RELACIONAR O PEDIDO PRODUTO 
+
 @Entity
 @Table(name = "pedido_produto")
 @Data

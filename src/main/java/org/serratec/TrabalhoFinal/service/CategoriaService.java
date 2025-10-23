@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.serratec.TrabalhoFinal.domain.Categoria;
 import org.serratec.TrabalhoFinal.repository.CategoriaRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -11,6 +12,7 @@ import jakarta.persistence.EntityNotFoundException;
 @Service
 public class CategoriaService {
 
+	@Autowired
     private final CategoriaRepository categoriaRepository;
 
     public CategoriaService(CategoriaRepository categoriaRepository) {
