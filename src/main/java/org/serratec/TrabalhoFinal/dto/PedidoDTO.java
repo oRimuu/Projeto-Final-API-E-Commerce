@@ -1,7 +1,6 @@
 package org.serratec.TrabalhoFinal.dto;
 
 import lombok.Data;
-import org.serratec.TrabalhoFinal.domain.Cliente;
 import org.serratec.TrabalhoFinal.enums.StatusPedido;
 
 import java.math.BigDecimal;
@@ -14,7 +13,7 @@ public class PedidoDTO {
     private Long id;
     private LocalDate dataPedido;
     private BigDecimal valorTotal;
-    private Cliente cliente;
+    private ClienteDTO cliente;
     private List<ItemPedidoDTO> itens;
     private StatusPedido status;
 

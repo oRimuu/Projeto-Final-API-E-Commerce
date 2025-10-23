@@ -6,7 +6,19 @@ import java.util.List;
 
 import org.serratec.TrabalhoFinal.enums.StatusPedido;
 
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import lombok.AllArgsConstructor;
@@ -37,7 +49,7 @@ public class Pedido {
     @JoinColumn(name = "cliente_id", nullable = false)
     private Cliente cliente;
 
-    @OneToMany(mappedBy = "pedido")//, cascade = CascadeType.ALL
+    @OneToMany(mappedBy = "pedido", fetch = FetchType.EAGER,  cascade = CascadeType.ALL)
     private List<PedidoProduto> itens;
 
     @NotNull

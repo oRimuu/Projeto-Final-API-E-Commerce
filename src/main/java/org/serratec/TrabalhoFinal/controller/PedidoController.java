@@ -1,6 +1,7 @@
 package org.serratec.TrabalhoFinal.controller;
 
 import org.serratec.TrabalhoFinal.domain.Pedido;
+import org.serratec.TrabalhoFinal.dto.PedidoDTO;
 import org.serratec.TrabalhoFinal.service.PedidoService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,7 +26,7 @@ public class PedidoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Pedido>> listarTodos() {
+    public ResponseEntity<List<PedidoDTO>> listarTodos() {
         return ResponseEntity.ok(pedidoService.listarTodos());
     }
 

@@ -7,8 +7,8 @@ import java.util.stream.Collectors;
 import org.serratec.TrabalhoFinal.domain.Pedido;
 import org.serratec.TrabalhoFinal.domain.PedidoProduto;
 import org.serratec.TrabalhoFinal.domain.Produto;
-import org.serratec.TrabalhoFinal.dto.PedidoDTO;
 import org.serratec.TrabalhoFinal.dto.ClienteDTO;
+import org.serratec.TrabalhoFinal.dto.PedidoDTO;
 import org.serratec.TrabalhoFinal.repository.PedidoRepository;
 import org.serratec.TrabalhoFinal.repository.ProdutoRepository;
 import org.springframework.stereotype.Service;
@@ -33,7 +33,6 @@ public class PedidoService {
         dto.setValorTotal(pedido.getValorTotal());
         dto.setStatus(pedido.getStatus());
 
-        // Mapear cliente para ClienteDTO
         if (pedido.getCliente() != null) {
             ClienteDTO clienteDTO = new ClienteDTO();
             clienteDTO.setId(pedido.getCliente().getId());
@@ -41,10 +40,9 @@ public class PedidoService {
             clienteDTO.setTelefone(pedido.getCliente().getTelefone());
             clienteDTO.setCep(pedido.getCliente().getCep());
             clienteDTO.setCidade(pedido.getCliente().getCidade());
-            dto.setCliente(pedido.getCliente()); // se quiser usar ClienteDTO, altere o tipo em PedidoDTO
+            dto.setCliente(clienteDTO);
         }
 
-        // Mapear itens do pedido
         if (pedido.getItens() != null && !pedido.getItens().isEmpty()) {
             List<PedidoDTO.ItemPedidoDTO> itensDTO = pedido.getItens().stream()
                     .map(item -> {
@@ -60,6 +58,7 @@ public class PedidoService {
 
         return dto;
     }
+
 
     public List<PedidoDTO> listarTodos() {
         return pedidoRepository.findAll().stream()
