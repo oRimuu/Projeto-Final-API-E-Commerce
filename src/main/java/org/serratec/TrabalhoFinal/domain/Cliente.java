@@ -48,7 +48,7 @@ public class Cliente {
     @Pattern(regexp = "\\d{8}", message = "O CEP deve conter 8 dígitos numéricos.")
     private String cep;
 
-    // CAMPOS QUE VIRÃO DA API ViaCEP
+    // API ViaCep Completa :)
     private String logradouro;
     private String bairro;
     private String cidade;

@@ -10,12 +10,13 @@ import org.serratec.TrabalhoFinal.domain.PedidoProdutoPK;
 import org.serratec.TrabalhoFinal.domain.Produto;
 import org.serratec.TrabalhoFinal.dto.ClienteDTO;
 import org.serratec.TrabalhoFinal.dto.PedidoDTO;
+import org.serratec.TrabalhoFinal.dto.PedidoStatusDTO;
 import org.serratec.TrabalhoFinal.repository.PedidoRepository;
 import org.serratec.TrabalhoFinal.repository.ProdutoRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 
 @Service
 public class PedidoService {
@@ -129,12 +130,19 @@ public class PedidoService {
 
         return pedidoRepository.save(pedidoExistente);
     }
-
+    
 
     public void deletar(Long id) {
         Pedido pedido = pedidoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Pedido não encontrado com ID: " + id));
         pedidoRepository.delete(pedido);
+    }
+    
+    @Transactional
+    public Pedido atualizarPedidos(PedidoStatusDTO pedidoDTO) {
+    	pedidoRepository.AtualizarStatus(pedidoDTO.getId(), pedidoDTO.getStatus());
+    		
+    	return pedidoRepository.findById(pedidoDTO.getId()).get();
     }
 
     private void calcularValorTotal(Pedido pedido) {

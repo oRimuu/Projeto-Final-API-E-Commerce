@@ -1,7 +1,9 @@
 package org.serratec.TrabalhoFinal.controller;
 
+import org.apache.catalina.connector.Response;
 import org.serratec.TrabalhoFinal.domain.Pedido;
 import org.serratec.TrabalhoFinal.dto.PedidoDTO;
+import org.serratec.TrabalhoFinal.dto.PedidoStatusDTO;
 import org.serratec.TrabalhoFinal.service.PedidoService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -49,5 +51,10 @@ public class PedidoController {
     public ResponseEntity<Void> deletarPedido(@PathVariable Long id) {
         pedidoService.deletar(id);
         return ResponseEntity.noContent().build();
+    }
+    
+    @PutMapping("/status")
+    public ResponseEntity<Pedido> atualizarPedidos(@RequestBody PedidoStatusDTO pedidoAtualizado) {
+    	return ResponseEntity.ok(pedidoService.atualizarPedidos(pedidoAtualizado));
     }
 }
