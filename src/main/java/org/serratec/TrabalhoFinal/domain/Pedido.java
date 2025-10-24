@@ -49,7 +49,7 @@ public class Pedido {
     @JoinColumn(name = "cliente_id", nullable = false)
     private Cliente cliente;
 
-    @OneToMany(mappedBy = "pedido", fetch = FetchType.EAGER,  cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "pedido", fetch = FetchType.EAGER,  cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PedidoProduto> itens;
 
     @NotNull
@@ -57,6 +57,10 @@ public class Pedido {
     @Column(nullable = false)
     private StatusPedido status = StatusPedido.PENDENTE;
 
+    @NotNull
+    @Column
+    private BigDecimal valorDesconto;
+    
     // Calcula o total automaticamente com base nos itens
     public BigDecimal calcularValorTotal() {
         if (itens != null && !itens.isEmpty()) {

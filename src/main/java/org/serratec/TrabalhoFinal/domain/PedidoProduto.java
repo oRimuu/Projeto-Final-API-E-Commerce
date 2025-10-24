@@ -47,7 +47,24 @@ public class PedidoProduto {
     @Column(nullable = false)
     private BigDecimal precoUnitario;
 
-    public BigDecimal getSubtotal() {
-        return precoUnitario.multiply(BigDecimal.valueOf(quantidade));
+    @Column(nullable = false)
+    private BigDecimal subtotal; 
+
+    public void atualizarSubtotal() {
+        if (precoUnitario != null && quantidade != null) {
+            this.subtotal = precoUnitario.multiply(BigDecimal.valueOf(quantidade));
+        } else {
+            this.subtotal = BigDecimal.ZERO;
+        }
+    }
+
+    public void setQuantidade(Integer quantidade) {
+        this.quantidade = quantidade;
+        atualizarSubtotal();
+    }
+
+    public void setPrecoUnitario(BigDecimal precoUnitario) {
+        this.precoUnitario = precoUnitario;
+        atualizarSubtotal();
     }
 }

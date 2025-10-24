@@ -2,7 +2,6 @@ package org.serratec.TrabalhoFinal.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.serratec.TrabalhoFinal.domain.Categoria;
@@ -35,14 +34,14 @@ public class ProdutoService {
         produto.setPreco(dto.getPreco());
         produto.setQuantidadeEstoque(dto.getQuantidadeEstoque());
 
-        if (dto.getCategoriasIds() != null && !dto.getCategoriasIds().isEmpty()) {
-            List<Categoria> categorias = dto.getCategoriasIds().stream()
-                    .map(id -> categoriaRepository.findById(id)
-                            .orElseThrow(() -> new EntityNotFoundException("Categoria não encontrada: " + id)))
+        if (dto.getCategoriaDTO() != null && !dto.getCategoriaDTO().isEmpty()) {
+            List<Categoria> categorias = dto.getCategoriaDTO().stream()
+                    .map(categoriaDTO -> categoriaRepository.findById(categoriaDTO.getId())
+                            .orElseThrow(() -> new EntityNotFoundException(
+                                    "Categoria não encontrada: " + categoriaDTO.getId())))
                     .collect(Collectors.toList());
             produto.setCategorias(categorias);
         }
-
         return produto;
     }
 
@@ -55,26 +54,36 @@ public class ProdutoService {
         dto.setPreco(produto.getPreco());
         dto.setQuantidadeEstoque(produto.getQuantidadeEstoque());
 
-        if (produto.getCategorias() != null) {
-            List<CategoriaDTO> dtos = produto.getCategorias().stream()
-                    .map(CategoriaDTO::new)
+        if (produto.getCategorias() != null && !produto.getCategorias().isEmpty()) {
+            List<CategoriaDTO> categoriasDto = produto.getCategorias().stream()
+                    .map(cat -> {
+                        CategoriaDTO cd = new CategoriaDTO();
+                        cd.setId(cat.getId());
+                        cd.setNome(cat.getNome());
+                        return cd;
+                    })
                     .collect(Collectors.toList());
-            dto.setCategoriaDTO(dtos);
+            dto.setCategoriaDTO(categoriasDto);
+        } else {
+            dto.setCategoriaDTO(new ArrayList<>()); 
         }
-
         return dto;
     }
 
+
     public ProdutoDTO salvar(ProdutoDTO dto) {
-        Produto produto = dtoToProduto(dto);
-        List<Categoria>categorias = new ArrayList<>();
-       for (Long categoriaId : dto.getCategoriasIds()) {
-    	  Optional<Categoria> categoriaOpt = categoriaRepository.findById(categoriaId);
-    	  if (categoriaOpt.isPresent()) {
-    		categorias.add(categoriaOpt.get());
-    	  }
-       }
-       	produto.setCategorias(categorias);
+        Produto produto = dtoToProduto(dto); 
+        List<Categoria> categorias = new ArrayList<>();
+
+        if (dto.getCategoriaDTO() != null && !dto.getCategoriaDTO().isEmpty()) {
+            for (CategoriaDTO catDto : dto.getCategoriaDTO()) {
+                Long id = catDto.getId();
+                Categoria categoria = categoriaRepository.findById(id)
+                        .orElseThrow(() -> new EntityNotFoundException("Categoria não encontrada: " + id));
+                categorias.add(categoria);
+            }
+        }
+        produto.setCategorias(categorias);
         Produto salvo = produtoRepository.save(produto);
         return produtoToDTO(salvo);
     }

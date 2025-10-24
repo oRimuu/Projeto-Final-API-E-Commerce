@@ -14,6 +14,7 @@ public class PedidoDTO {
     private LocalDate dataPedido;
     private BigDecimal valorTotal;
     private ClienteDTO cliente;
+    private BigDecimal valorDesconto;
     private List<ItemPedidoDTO> itens;
     private StatusPedido status;
 

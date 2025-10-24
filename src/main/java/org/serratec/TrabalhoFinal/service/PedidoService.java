@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.serratec.TrabalhoFinal.domain.Pedido;
 import org.serratec.TrabalhoFinal.domain.PedidoProduto;
+import org.serratec.TrabalhoFinal.domain.PedidoProdutoPK;
 import org.serratec.TrabalhoFinal.domain.Produto;
 import org.serratec.TrabalhoFinal.dto.ClienteDTO;
 import org.serratec.TrabalhoFinal.dto.PedidoDTO;
@@ -14,6 +15,7 @@ import org.serratec.TrabalhoFinal.repository.ProdutoRepository;
 import org.springframework.stereotype.Service;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 
 @Service
 public class PedidoService {
@@ -32,6 +34,7 @@ public class PedidoService {
         dto.setDataPedido(pedido.getDataPedido());
         dto.setValorTotal(pedido.getValorTotal());
         dto.setStatus(pedido.getStatus());
+        dto.setValorDesconto(pedido.getValorDesconto());
 
         if (pedido.getCliente() != null) {
             ClienteDTO clienteDTO = new ClienteDTO();
@@ -73,9 +76,17 @@ public class PedidoService {
 
     public Pedido salvar(Pedido pedido) {
         calcularValorTotal(pedido);
+
+        if (pedido.getValorTotal().compareTo(new BigDecimal("100")) > 0) {
+            BigDecimal desconto = pedido.getValorTotal().multiply(new BigDecimal("0.10"));
+            pedido.setValorDesconto(desconto);
+            pedido.setValorTotal(pedido.getValorTotal().subtract(desconto));
+        }
+
         return pedidoRepository.save(pedido);
     }
 
+    @Transactional
     public Pedido atualizar(Long id, Pedido pedidoAtualizado) {
         Pedido pedidoExistente = pedidoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Pedido não encontrado com ID: " + id));
@@ -83,11 +94,42 @@ public class PedidoService {
         pedidoExistente.setCliente(pedidoAtualizado.getCliente());
         pedidoExistente.setDataPedido(pedidoAtualizado.getDataPedido());
         pedidoExistente.setStatus(pedidoAtualizado.getStatus());
-        pedidoExistente.setItens(pedidoAtualizado.getItens());
+
+        pedidoExistente.getItens().clear();
+
+        for (PedidoProduto itemNovo : pedidoAtualizado.getItens()) {
+            Produto produto = itemNovo.getProduto();
+
+            if (produto == null || produto.getId() == null) {
+                throw new IllegalArgumentException("Produto inválido em um dos itens do pedido.");
+            }
+
+            PedidoProduto novoItem = new PedidoProduto();
+            novoItem.setPedido(pedidoExistente);
+            novoItem.setProduto(produto);
+            novoItem.setQuantidade(itemNovo.getQuantidade());
+            novoItem.setId(new PedidoProdutoPK(pedidoExistente.getId(), produto.getId()));
+            
+            if (itemNovo.getQuantidade() != null && produto.getPreco() != null) {
+                novoItem.setSubtotal(produto.getPreco().multiply(new BigDecimal(itemNovo.getQuantidade())));
+            }
+
+            pedidoExistente.getItens().add(novoItem);
+        }
 
         calcularValorTotal(pedidoExistente);
+
+        if (pedidoExistente.getValorTotal().compareTo(new BigDecimal("100")) > 0) {
+            BigDecimal desconto = pedidoExistente.getValorTotal().multiply(new BigDecimal("0.10"));
+            pedidoExistente.setValorDesconto(desconto);
+            pedidoExistente.setValorTotal(pedidoExistente.getValorTotal().subtract(desconto));
+        } else {
+            pedidoExistente.setValorDesconto(BigDecimal.ZERO);
+        }
+
         return pedidoRepository.save(pedidoExistente);
     }
+
 
     public void deletar(Long id) {
         Pedido pedido = pedidoRepository.findById(id)
