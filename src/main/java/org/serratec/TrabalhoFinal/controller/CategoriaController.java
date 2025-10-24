@@ -33,7 +33,7 @@ public class CategoriaController {
     public ResponseEntity<List<CategoriaDTO>> listarTodas() {
         List<CategoriaDTO> categorias = categoriaService.listarCategorias()
                 .stream()
-                .map(c -> new CategoriaDTO(c.getId(), c.getNome(), c.getDescricao()))
+                .map(c -> new CategoriaDTO(c.getId(), c.getNome()))
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(categorias);
@@ -42,7 +42,7 @@ public class CategoriaController {
     @GetMapping("/{id}")
     public ResponseEntity<CategoriaDTO> buscarPorId(@PathVariable Long id) {
         Categoria categoria = categoriaService.buscarPorId(id);
-        CategoriaDTO dto = new CategoriaDTO(categoria.getId(), categoria.getNome(), categoria.getDescricao());
+        CategoriaDTO dto = new CategoriaDTO(categoria.getId(), categoria.getNome());
         return ResponseEntity.ok(dto);
     }
     
@@ -50,10 +50,9 @@ public class CategoriaController {
     public ResponseEntity<CategoriaDTO> criar(@Valid @RequestBody CategoriaDTO dto) {
         Categoria categoria = new Categoria();
         categoria.setNome(dto.getNome());
-        categoria.setDescricao(dto.getDescricao());
 
         Categoria novaCategoria = categoriaService.salvar(categoria);
-        CategoriaDTO novaDTO = new CategoriaDTO(novaCategoria.getId(), novaCategoria.getNome(), novaCategoria.getDescricao());
+        CategoriaDTO novaDTO = new CategoriaDTO(novaCategoria.getId(), novaCategoria.getNome());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(novaDTO);
     }
@@ -62,10 +61,9 @@ public class CategoriaController {
     public ResponseEntity<CategoriaDTO> atualizar(@PathVariable Long id, @Valid @RequestBody CategoriaDTO dto) {
         Categoria categoriaAtualizada = new Categoria();
         categoriaAtualizada.setNome(dto.getNome());
-        categoriaAtualizada.setDescricao(dto.getDescricao());
 
         Categoria categoria = categoriaService.atualizar(id, categoriaAtualizada);
-        CategoriaDTO categoriaDTO = new CategoriaDTO(categoria.getId(), categoria.getNome(), categoria.getDescricao());
+        CategoriaDTO categoriaDTO = new CategoriaDTO(categoria.getId(), categoria.getNome());
 
         return ResponseEntity.ok(categoriaDTO);
     }

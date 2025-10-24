@@ -1,10 +1,13 @@
 package org.serratec.TrabalhoFinal.service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.serratec.TrabalhoFinal.domain.Categoria;
 import org.serratec.TrabalhoFinal.domain.Produto;
+import org.serratec.TrabalhoFinal.dto.CategoriaDTO;
 import org.serratec.TrabalhoFinal.dto.ProdutoDTO;
 import org.serratec.TrabalhoFinal.repository.CategoriaRepository;
 import org.serratec.TrabalhoFinal.repository.ProdutoRepository;
@@ -14,10 +17,10 @@ import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class ProdutoService {
-
+	
     private final ProdutoRepository produtoRepository;
     private final CategoriaRepository categoriaRepository;
-
+    
     public ProdutoService(ProdutoRepository produtoRepository, CategoriaRepository categoriaRepository) {
         this.produtoRepository = produtoRepository;
         this.categoriaRepository = categoriaRepository;
@@ -53,10 +56,10 @@ public class ProdutoService {
         dto.setQuantidadeEstoque(produto.getQuantidadeEstoque());
 
         if (produto.getCategorias() != null) {
-            List<Long> ids = produto.getCategorias().stream()
-                    .map(Categoria::getId)
+            List<CategoriaDTO> dtos = produto.getCategorias().stream()
+                    .map(CategoriaDTO::new)
                     .collect(Collectors.toList());
-            dto.setCategoriasIds(ids);
+            dto.setCategoriaDTO(dtos);
         }
 
         return dto;
@@ -64,6 +67,14 @@ public class ProdutoService {
 
     public ProdutoDTO salvar(ProdutoDTO dto) {
         Produto produto = dtoToProduto(dto);
+        List<Categoria>categorias = new ArrayList<>();
+       for (Long categoriaId : dto.getCategoriasIds()) {
+    	  Optional<Categoria> categoriaOpt = categoriaRepository.findById(categoriaId);
+    	  if (categoriaOpt.isPresent()) {
+    		categorias.add(categoriaOpt.get());
+    	  }
+       }
+       	produto.setCategorias(categorias);
         Produto salvo = produtoRepository.save(produto);
         return produtoToDTO(salvo);
     }

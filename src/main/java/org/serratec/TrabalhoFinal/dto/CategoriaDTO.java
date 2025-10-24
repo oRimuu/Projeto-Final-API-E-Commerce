@@ -1,6 +1,8 @@
 package org.serratec.TrabalhoFinal.dto;
 
 
+import org.serratec.TrabalhoFinal.domain.Categoria;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,5 +17,9 @@ public class CategoriaDTO {
 	
 	private String nome;
 	
-	private String descricao;
+	
+	public CategoriaDTO(Categoria categoria){
+		this.id = categoria.getId();
+		this.nome = categoria.getNome();
+	}
 }

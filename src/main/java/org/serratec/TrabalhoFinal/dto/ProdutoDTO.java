@@ -3,6 +3,8 @@ package org.serratec.TrabalhoFinal.dto;
 import java.math.BigDecimal;
 import java.util.List;
 
+import org.serratec.TrabalhoFinal.domain.Categoria;
+
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -34,5 +36,9 @@ public class ProdutoDTO {
     @Min(value = 0, message = "A quantidade não pode ser negativa")
     private Integer quantidadeEstoque;
 
+    
     private List<Long> categoriasIds; 
+    
+    private List<CategoriaDTO> categoriaDTO;
+    
 }
