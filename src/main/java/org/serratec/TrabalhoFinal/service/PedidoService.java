@@ -11,6 +11,7 @@ import org.serratec.TrabalhoFinal.domain.Produto;
 import org.serratec.TrabalhoFinal.dto.ClienteDTO;
 import org.serratec.TrabalhoFinal.dto.PedidoDTO;
 import org.serratec.TrabalhoFinal.dto.PedidoStatusDTO;
+import org.serratec.TrabalhoFinal.exception.BusinessException;
 import org.serratec.TrabalhoFinal.repository.PedidoRepository;
 import org.serratec.TrabalhoFinal.repository.ProdutoRepository;
 import org.springframework.stereotype.Service;
@@ -76,14 +77,14 @@ public class PedidoService {
     }
 
     public Pedido salvar(Pedido pedido) {
-        calcularValorTotal(pedido);
+        if (pedido.getCliente() == null || pedido.getCliente().getId() == null) {
+            throw new BusinessException("Falta o ID do cliente");
 
-        if (pedido.getValorTotal().compareTo(new BigDecimal("100")) > 0) {
-            BigDecimal desconto = pedido.getValorTotal().multiply(new BigDecimal("0.10"));
-            pedido.setValorDesconto(desconto);
-            pedido.setValorTotal(pedido.getValorTotal().subtract(desconto));
         }
-
+        if (pedido.getItens().get(0).getId().getProdutoId() == null) {
+            throw new BusinessException("Falta o ID do Produto");
+        }
+        calcularValorTotal(pedido);
         return pedidoRepository.save(pedido);
     }
 
