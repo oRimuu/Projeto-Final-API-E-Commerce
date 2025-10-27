@@ -83,7 +83,6 @@ public class PedidoService {
         if (pedido.getCliente() == null || pedido.getCliente().getId() == null) {
             throw new BusinessException("Falta o ID do cliente");
         }
-        // Verifica se os produtos existem
         for (PedidoProduto item : pedido.getItens()) {
             Long produtoId = item.getProduto().getId();
 

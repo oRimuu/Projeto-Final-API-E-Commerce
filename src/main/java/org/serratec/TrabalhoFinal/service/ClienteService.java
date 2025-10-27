@@ -2,6 +2,7 @@ package org.serratec.TrabalhoFinal.service;
 
 import org.serratec.TrabalhoFinal.domain.Cliente;
 import org.serratec.TrabalhoFinal.dto.ClienteDTO;
+import org.serratec.TrabalhoFinal.exception.BusinessException;
 import org.serratec.TrabalhoFinal.repository.ClienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -55,6 +56,23 @@ public class ClienteService {
     }
 
     public Cliente salvar(Cliente cliente) {
+        // Normaliza o CPF (remove . e -)
+        String cpfNormalizado = cliente.getCpf().replaceAll("[^0-9]", "");
+        cliente.setCpf(cpfNormalizado);
+
+        // Normaliza o e-mail (para evitar problemas de maiúsculas/minúsculas)
+        cliente.setEmail(cliente.getEmail().trim().toLowerCase());
+
+        // Verifica se já existe cliente com o mesmo e-mail
+        if (clienteRepository.findByEmail(cliente.getEmail()).isPresent()) {
+            throw new BusinessException("Já existe um cliente cadastrado com este e-mail: " + cliente.getEmail());
+        }
+
+        // Verifica se já existe cliente com o mesmo CPF normalizado
+        if (clienteRepository.findByCpf(cpfNormalizado).isPresent()) {
+            throw new BusinessException("Já existe um cliente cadastrado com este CPF: " + cliente.getCpf());
+        }
+
         // método padrão usado pelo controller — envia e-mail de cadastro
         return salvar(cliente, true);
     }
