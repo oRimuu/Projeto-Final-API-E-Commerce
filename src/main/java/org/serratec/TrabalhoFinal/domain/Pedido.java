@@ -57,7 +57,6 @@ public class Pedido {
     @Column(nullable = false)
     private StatusPedido status = StatusPedido.PENDENTE;
 
-    @NotNull
     @Column
     private BigDecimal valorDesconto;
     

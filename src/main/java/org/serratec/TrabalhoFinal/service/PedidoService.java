@@ -2,8 +2,10 @@ package org.serratec.TrabalhoFinal.service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.serratec.TrabalhoFinal.domain.Cliente;
 import org.serratec.TrabalhoFinal.domain.Pedido;
 import org.serratec.TrabalhoFinal.domain.PedidoProduto;
 import org.serratec.TrabalhoFinal.domain.PedidoProdutoPK;
@@ -12,6 +14,7 @@ import org.serratec.TrabalhoFinal.dto.ClienteDTO;
 import org.serratec.TrabalhoFinal.dto.PedidoDTO;
 import org.serratec.TrabalhoFinal.dto.PedidoStatusDTO;
 import org.serratec.TrabalhoFinal.exception.BusinessException;
+import org.serratec.TrabalhoFinal.repository.ClienteRepository;
 import org.serratec.TrabalhoFinal.repository.PedidoRepository;
 import org.serratec.TrabalhoFinal.repository.ProdutoRepository;
 import org.springframework.stereotype.Service;
@@ -79,12 +82,27 @@ public class PedidoService {
     public Pedido salvar(Pedido pedido) {
         if (pedido.getCliente() == null || pedido.getCliente().getId() == null) {
             throw new BusinessException("Falta o ID do cliente");
-
         }
-        if (pedido.getItens().get(0).getId().getProdutoId() == null) {
-            throw new BusinessException("Falta o ID do Produto");
+        // Verifica se os produtos existem
+        for (PedidoProduto item : pedido.getItens()) {
+            Long produtoId = item.getProduto().getId();
+
+            if (produtoId == null) {
+                throw new BusinessException("Falta o ID de um dos produtos no pedido");
+            } 
+            produtoRepository.findById(produtoId)
+                    .orElseThrow(() -> new BusinessException("Produto com ID " + produtoId + " não encontrado"));
         }
         calcularValorTotal(pedido);
+        
+        if (pedido.getValorTotal().compareTo(new BigDecimal("100")) > 0) {
+            BigDecimal desconto = pedido.getValorTotal().multiply(new BigDecimal("0.10"));
+            pedido.setValorDesconto(desconto);
+            pedido.setValorTotal(pedido.getValorTotal().subtract(desconto));
+        } else {
+            pedido.setValorDesconto(BigDecimal.ZERO);
+        }
+
         return pedidoRepository.save(pedido);
     }
 
