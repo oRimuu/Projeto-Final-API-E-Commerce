@@ -4,6 +4,7 @@ package org.serratec.TrabalhoFinal.repository;
 import java.util.List;
 
 import org.serratec.TrabalhoFinal.domain.Pedido;
+import org.serratec.TrabalhoFinal.enums.OpcaoPagamento;
 import org.serratec.TrabalhoFinal.enums.StatusPedido;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,6 +21,7 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
     
     @Modifying
     @Query("update Pedido p set p.status = :status where p.id = :id")
-    void AtualizarStatus(@Param("id") Long id, @Param("status") StatusPedido status);
+    void AtualizarStatusEPagamento(@Param("id") Long id, @Param("status") StatusPedido status, @Param("tipoPagamento") OpcaoPagamento opcaoPagamento);
+
 }
 

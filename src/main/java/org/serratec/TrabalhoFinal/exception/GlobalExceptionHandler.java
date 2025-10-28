@@ -104,4 +104,5 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler{
                 List.of(ex.getMessage()));
         return new ResponseEntity<>(erro, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+    
 }

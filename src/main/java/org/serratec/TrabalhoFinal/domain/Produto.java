@@ -74,8 +74,8 @@ public class Produto {
   
     
     // Um produto pode estar em vários itens de pedido
-    @OneToMany(mappedBy = "produto", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "produto",fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JsonManagedReference
-    private List<PedidoProduto> itens;  
+    private List<PedidoProduto> itens;
     
 }

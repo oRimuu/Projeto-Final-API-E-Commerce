@@ -115,7 +115,7 @@ public class ClienteService {
 
     public Cliente atualizar(Long id, Cliente cliente) {
         cliente.setId(id);
-        // Evita o e-mail duplicado
+        // Evita o e-mail duplicado	
         Cliente clienteAtualizado = salvar(cliente, false);
 
         try {
@@ -138,7 +138,15 @@ public class ClienteService {
     }
 
     public void deletar(Long id) {
+        Cliente cliente = clienteRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+
+        if (!cliente.getPedidos().isEmpty()) {
+            throw new RuntimeException("Não é possível deletar um cliente que possui pedidos.");
+        }
+
         clienteRepository.deleteById(id);
     }
+
 
 }

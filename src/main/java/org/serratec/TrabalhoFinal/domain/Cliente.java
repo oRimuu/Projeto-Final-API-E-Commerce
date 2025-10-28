@@ -1,13 +1,11 @@
 package org.serratec.TrabalhoFinal.domain;
 
-import org.hibernate.validator.constraints.br.CPF;
+import java.util.List;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import org.hibernate.validator.constraints.br.CPF;
+import org.serratec.TrabalhoFinal.dto.ClienteDTO;
+
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -41,7 +39,7 @@ public class Cliente {
     private String email;
 
     @Column(unique = true, length = 14)
-    //@CPF
+    @CPF
     private String cpf;
 
     @NotBlank(message = "O CEP é obrigatório.")
@@ -53,4 +51,7 @@ public class Cliente {
     private String bairro;
     private String cidade;
     private String uf;
+
+    @OneToMany(mappedBy = "cliente")
+    private List<Pedido> pedidos;
 }

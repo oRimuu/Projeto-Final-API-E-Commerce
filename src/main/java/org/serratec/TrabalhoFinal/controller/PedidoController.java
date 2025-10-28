@@ -1,6 +1,6 @@
 package org.serratec.TrabalhoFinal.controller;
 
-import org.apache.catalina.connector.Response;
+
 import org.serratec.TrabalhoFinal.domain.Pedido;
 import org.serratec.TrabalhoFinal.dto.PedidoDTO;
 import org.serratec.TrabalhoFinal.dto.PedidoStatusDTO;

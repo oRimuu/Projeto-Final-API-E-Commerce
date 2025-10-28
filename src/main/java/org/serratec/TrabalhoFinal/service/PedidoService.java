@@ -2,10 +2,10 @@ package org.serratec.TrabalhoFinal.service;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
+
 import java.util.stream.Collectors;
 
-import org.serratec.TrabalhoFinal.domain.Cliente;
+
 import org.serratec.TrabalhoFinal.domain.Pedido;
 import org.serratec.TrabalhoFinal.domain.PedidoProduto;
 import org.serratec.TrabalhoFinal.domain.PedidoProdutoPK;
@@ -13,8 +13,8 @@ import org.serratec.TrabalhoFinal.domain.Produto;
 import org.serratec.TrabalhoFinal.dto.ClienteDTO;
 import org.serratec.TrabalhoFinal.dto.PedidoDTO;
 import org.serratec.TrabalhoFinal.dto.PedidoStatusDTO;
+
 import org.serratec.TrabalhoFinal.exception.BusinessException;
-import org.serratec.TrabalhoFinal.repository.ClienteRepository;
 import org.serratec.TrabalhoFinal.repository.PedidoRepository;
 import org.serratec.TrabalhoFinal.repository.ProdutoRepository;
 import org.springframework.stereotype.Service;
@@ -83,17 +83,32 @@ public class PedidoService {
         if (pedido.getCliente() == null || pedido.getCliente().getId() == null) {
             throw new BusinessException("Falta o ID do cliente");
         }
+
         for (PedidoProduto item : pedido.getItens()) {
             Long produtoId = item.getProduto().getId();
 
             if (produtoId == null) {
                 throw new BusinessException("Falta o ID de um dos produtos no pedido");
-            } 
-            produtoRepository.findById(produtoId)
+            }
+
+            Produto produto = produtoRepository.findById(produtoId)
                     .orElseThrow(() -> new BusinessException("Produto com ID " + produtoId + " não encontrado"));
+
+            if (item.getQuantidade() > produto.getQuantidadeEstoque()) {
+                throw new BusinessException("Quantidade solicitada (" + item.getQuantidade()
+                        + ") excede o estoque disponível (" + produto.getQuantidadeEstoque()
+                        + ") para o produto: " + produto.getNome());
+            }
+
+            produto.setQuantidadeEstoque(produto.getQuantidadeEstoque() - item.getQuantidade());
+            produtoRepository.save(produto);
+
+            item.setPrecoUnitario(produto.getPreco());
+            item.setPedido(pedido);
         }
+
         calcularValorTotal(pedido);
-        
+
         if (pedido.getValorTotal().compareTo(new BigDecimal("100")) > 0) {
             BigDecimal desconto = pedido.getValorTotal().multiply(new BigDecimal("0.10"));
             pedido.setValorDesconto(desconto);
@@ -105,7 +120,10 @@ public class PedidoService {
         return pedidoRepository.save(pedido);
     }
 
+
     @Transactional
+    
+    
     public Pedido atualizar(Long id, Pedido pedidoAtualizado) {
         Pedido pedidoExistente = pedidoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Pedido não encontrado com ID: " + id));
@@ -157,9 +175,13 @@ public class PedidoService {
     }
     
     @Transactional
+    
     public Pedido atualizarPedidos(PedidoStatusDTO pedidoDTO) {
-    	pedidoRepository.AtualizarStatus(pedidoDTO.getId(), pedidoDTO.getStatus());
-    		
+    	
+    	
+    	pedidoRepository.AtualizarStatusEPagamento(pedidoDTO.getId(), pedidoDTO.getStatus(), pedidoDTO.getTipoPagamento());
+    	 if (pedidoDTO.getTipoPagamento() == null) {
+             throw new BusinessException("O tipo de pagamento não pode ser nulo.");}
     	return pedidoRepository.findById(pedidoDTO.getId()).get();
     }
 
@@ -175,6 +197,7 @@ public class PedidoService {
                 item.setProduto(produto);
                 item.setPrecoUnitario(produto.getPreco());
                 item.setPedido(pedido);
+     
 
                 valorTotal = valorTotal.add(item.getSubtotal());
             }

@@ -8,6 +8,7 @@ import org.serratec.TrabalhoFinal.domain.Categoria;
 import org.serratec.TrabalhoFinal.domain.Produto;
 import org.serratec.TrabalhoFinal.dto.CategoriaDTO;
 import org.serratec.TrabalhoFinal.dto.ProdutoDTO;
+import org.serratec.TrabalhoFinal.exception.BusinessException;
 import org.serratec.TrabalhoFinal.repository.CategoriaRepository;
 import org.serratec.TrabalhoFinal.repository.ProdutoRepository;
 import org.springframework.stereotype.Service;
@@ -114,6 +115,14 @@ public class ProdutoService {
     public void deletar(Long id) {
         Produto produto = produtoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Produto não encontrado com ID: " + id));
+
+        // Verifica se o produto está em algum pedido (FK)
+        if (produto.getItens() != null && !produto.getItens().isEmpty()) {
+            throw new BusinessException("Não é possível deletar o produto, pois ele está vinculado a um pedido.");
+        }
+
         produtoRepository.delete(produto);
     }
+
+
 }

@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.serratec.TrabalhoFinal.enums.OpcaoPagamento;
 import org.serratec.TrabalhoFinal.enums.StatusPedido;
 
 import jakarta.persistence.CascadeType;
@@ -56,6 +57,11 @@ public class Pedido {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private StatusPedido status = StatusPedido.PENDENTE;
+    
+    @NotNull (message ="Informe o tipo de pagamento!")
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private OpcaoPagamento opcaoPagamento;
 
     @Column
     private BigDecimal valorDesconto;
