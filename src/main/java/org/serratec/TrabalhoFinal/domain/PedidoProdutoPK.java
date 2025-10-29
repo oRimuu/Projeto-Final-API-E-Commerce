@@ -7,7 +7,11 @@ import java.util.Objects;
 @Embeddable
 public class PedidoProdutoPK implements Serializable {
 
-    private Long pedidoId;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 3369717744999524894L;
+	private Long pedidoId;
     private Long produtoId;
 
     public PedidoProdutoPK() {
