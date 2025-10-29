@@ -35,11 +35,14 @@ public class PedidoService {
 
     private PedidoDTO pedidoToDTO(Pedido pedido) {
         PedidoDTO dto = new PedidoDTO();
+        
         dto.setId(pedido.getId());
         dto.setDataPedido(pedido.getDataPedido());
         dto.setValorTotal(pedido.getValorTotal());
         dto.setStatus(pedido.getStatus());
         dto.setValorDesconto(pedido.getValorDesconto());
+
+        dto.setOpcaoPagamento(pedido.getOpcaoPagamento());
 
         if (pedido.getCliente() != null) {
             ClienteDTO clienteDTO = new ClienteDTO();
@@ -60,13 +63,13 @@ public class PedidoService {
                         itemDTO.setQuantidade(item.getQuantidade());
                         itemDTO.setSubtotal(item.getSubtotal());
                         return itemDTO;
-                    }).collect(Collectors.toList());
+                    })
+                    .collect(Collectors.toList());
             dto.setItens(itensDTO);
         }
 
         return dto;
     }
-
 
     public List<PedidoDTO> listarTodos() {
         return pedidoRepository.findAll().stream()
@@ -83,6 +86,13 @@ public class PedidoService {
         if (pedido.getCliente() == null || pedido.getCliente().getId() == null) {
             throw new BusinessException("Falta o ID do cliente");
         }
+        
+        for (PedidoProduto item : pedido.getItens()) {
+            if (item.getQuantidade() == null || item.getQuantidade() <= 0) {
+                throw new BusinessException("A quantidade de cada item deve ser informada e maior que zero.");
+            }
+        }
+
 
         for (PedidoProduto item : pedido.getItens()) {
             Long produtoId = item.getProduto().getId();
@@ -122,8 +132,6 @@ public class PedidoService {
 
 
     @Transactional
-    
-    
     public Pedido atualizar(Long id, Pedido pedidoAtualizado) {
         Pedido pedidoExistente = pedidoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Pedido não encontrado com ID: " + id));

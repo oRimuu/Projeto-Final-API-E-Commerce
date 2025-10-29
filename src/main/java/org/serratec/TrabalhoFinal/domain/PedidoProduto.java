@@ -7,6 +7,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -39,7 +40,8 @@ public class PedidoProduto {
     @JoinColumn(name = "id_produto")
     private Produto produto;
 
-    @NotNull(message = "Preencha a quantidade.")
+    @NotNull(message = "A quantidade não pode ser nula.")
+    @Min(value = 1, message = "A quantidade deve ser pelo menos 1.")
     @Column(nullable = false)
     private Integer quantidade;
 
